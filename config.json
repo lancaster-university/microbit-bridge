@@ -1,0 +1,10 @@
+{
+    "microbit-dal":{
+        "radio":{
+            "version":"MICROBIT_RADIO_MODIFIED"
+        },
+        "bluetooth":{
+            "enabled":0
+        }
+    }
+}

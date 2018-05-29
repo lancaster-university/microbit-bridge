@@ -24,16 +24,42 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include "MicroBit.h"
+#include "DynamicType.h"
+#include "Radio.h"
+#include "Bridge.h"
 
 MicroBit uBit;
+
+Bridge bridge(uBit.radio, uBit.serial, uBit.messageBus);
+
+void log_string(const char * c)
+{
+    // uBit.serial.printf("%s\r\n",c);
+}
+
+void log_string_priv(const char * c)
+{
+    // uBit.serial.printf("\\%s\\",c);
+    // uBit.serial.printf("%s",c);
+}
+void log_num_priv(int c)
+{
+    // uBit.serial.printf("\\%d\\",c);
+    // uBit.serial.printf("%d",c);
+}
+
+void log_num(int c)
+{
+    // uBit.serial.printf("%d\r\n",c);
+}
 
 int main()
 {
     // Initialise the micro:bit runtime.
     uBit.init();
-
-    // Insert your code here!
-    uBit.display.scroll("HELLO WORLD! :)");
+    log_string_priv("HELLO");
+    uBit.display.print('H');
+    uBit.radio.enable();
 
     // If main exits, there may still be other fibers running or registered event handlers etc.
     // Simply release this fiber, which will mean we enter the scheduler. Worse case, we then
