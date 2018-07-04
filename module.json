@@ -4,8 +4,8 @@
   "description": "The micro:bit runtime common abstraction with examples.",
   "license": "MIT",
   "dependencies": {
-    "microbit": "lancaster-university/microbit#rest-radio",
-    "rest-radio":"lancaster-university/rest-radio"
+    "microbit": "santosh-kondu/microbit#rest-radio",
+    "rest-radio":"santosh-kondu/rest-radio"
   },
   "targetDependencies": {},
   "bin": "./source"

@@ -32,12 +32,62 @@ MicroBit uBit;
 
 Bridge bridge(uBit.radio, uBit.serial, uBit.messageBus);
 
+
+int channelNumber = 0;
+int eventCount = 0;
+
+void onButton(MicroBitEvent e)
+{
+    eventCount ++;
+    if (e.source == MICROBIT_ID_BUTTON_A)
+    {
+        if(eventCount == 3)
+        {
+            channelNumber ++;
+            if(channelNumber > 9)
+            {
+                channelNumber = 9;
+            }
+            char channelDisplay = (char)channelNumber + 48;
+            uBit.display.print(channelDisplay);
+            uBit.radio.disable();
+            uBit.radio.setGroup(channelNumber);
+            uBit.radio.enable();
+            eventCount = 0;
+        }
+    }
+
+    if (e.source == MICROBIT_ID_BUTTON_B)
+    {
+        if(eventCount == 3)
+        {
+            channelNumber --;
+            if(channelNumber < 0)
+            {
+                channelNumber = 0;
+            }
+            char channelDisplay = (char)channelNumber + 48;
+            uBit.display.print(channelDisplay);
+            uBit.radio.disable();
+            uBit.radio.setGroup(channelNumber);
+            uBit.radio.enable();
+            eventCount = 0;
+        }
+    }
+}
+
 int main()
 {
     // Initialise the micro:bit runtime.
     uBit.init();
 
-    uBit.display.print('H');
+    // Register to receive events when any buttons are clicked, including the A+B virtual button (both buttons at once).
+    uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY, onButton);
+    uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY, onButton);
+
+    uBit.display.scroll("H0");
+    uBit.radio.setGroup(channelNumber);
+    uBit.display.print('0');
     uBit.radio.enable();
 
     // If main exits, there may still be other fibers running or registered event handlers etc.
