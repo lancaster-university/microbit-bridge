@@ -4,8 +4,8 @@
   "description": "The micro:bit runtime common abstraction with examples.",
   "license": "MIT",
   "dependencies": {
-    "microbit": "santosh-kondu/microbit#rest-radio",
-    "rest-radio":"santosh-kondu/rest-radio"
+    "microbit": "https://GL-Kondu-Token:E3-Jyh5ppVsN7-P4B6yX@portal-ua.globallogic.com/gitlab/rohit.ail/microbit.git#rest-radio",
+    "rest-radio":"https://GL-Kondu-Token:E3-Jyh5ppVsN7-P4B6yX@portal-ua.globallogic.com/gitlab/rohit.ail/rest-radio.git#master"
   },
   "targetDependencies": {},
   "bin": "./source"
