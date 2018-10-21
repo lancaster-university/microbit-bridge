@@ -1,7 +1,7 @@
 {
     "microbit-dal":{
         "radio":{
-            "version":"MICROBIT_RADIO_MODIFIED"
+            "version":"MICROBIT_RADIO_PERIDO"
         },
         "bluetooth":{
             "enabled":0
