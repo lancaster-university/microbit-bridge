@@ -29,7 +29,32 @@ DEALINGS IN THE SOFTWARE.
 
 MicroBit uBit;
 
+char disp = 'a';
+
+extern const char* SCHOOL_ID;
+
 PeridoBridge bridge(uBit.radio, uBit.serial, uBit.messageBus);
+
+void change_display()
+{
+    disp++;
+    uBit.display.print(disp);
+}
+
+void log_string_ch(const char* c)
+{
+    // uBit.serial.printf("%s ", c);
+}
+
+void log_string(char c)
+{
+    // uBit.serial.printf("%c ", c);
+}
+
+void log_num(int c)
+{
+    // uBit.serial.printf("%d ", c);
+}
 
 int channelNumber = 0;
 int eventCount = 0;
@@ -79,6 +104,9 @@ int main()
     // Initialise the micro:bit runtime.
     uBit.init();
     uBit.radio.enable();
+
+    // uBit.display.print(disp);
+    uBit.display.scroll(SCHOOL_ID);
 
     // If main exits, there may still be other fibers running or registered event handlers etc.
     // Simply release this fiber, which will mean we enter the scheduler. Worse case, we then
