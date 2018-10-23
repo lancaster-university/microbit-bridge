@@ -3,8 +3,8 @@ import re, sys
 from optparse import OptionParser
 import tempfile
 
-SCHOOL_ID = "ABCDEFGHIJKL"
-HUB_ID = "ABCDEFGHIJKL"
+SCHOOL_ID = "M1cR0B1TSCHO"
+HUB_ID = "M1cR0B1THuBs"
 
 parser = OptionParser()
 
