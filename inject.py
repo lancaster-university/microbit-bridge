@@ -1,10 +1,12 @@
 from subprocess import call
-import re, sys
+import re, sys, os
 from optparse import OptionParser
 import tempfile
 
 SCHOOL_ID = "M1cR0B1TSCHO"
 HUB_ID = "M1cR0B1THuBs"
+
+BUILD_FOLDER_PATH = "./build/bbc-microbit-classic-gcc/source/microbit-samples.hex"
 
 parser = OptionParser()
 
@@ -42,25 +44,46 @@ def inject_ids(new_school_id, new_hub_id, output_file_path):
         print "New hub id length must much the old: size %d" % len(HUB_ID)
         return -1
 
+    if not os.path.isfile("./hub-not-combined.hex"):
+        ret = call(["cp", BUILD_FOLDER_PATH, "./hub-not-combined.hex"])
+        if ret != 0:
+            print "hub-combined-hex not available"
+
     with tempfile.NamedTemporaryFile() as hub_not_combined_modified_hex_file, \
-            tempfile.NamedTemporaryFile() as hub_not_combined_modified_bin_file, \
-            tempfile.NamedTemporaryFile() as hub_not_combined_uf2_file:
+            tempfile.NamedTemporaryFile() as hub_not_combined_modified_bin_file:
 
         # first convert the uncombined hex file into uf2
-        call(["python","uf2conv.py","./hub-not-combined.hex", "-o", hub_not_combined_uf2_file.name])
+        call(["python","hex2bin.py","./hub-not-combined.hex", hub_not_combined_modified_bin_file.name])
 
         # replace the old ids with the new.
-        uf2 = hub_not_combined_uf2_file.readlines()
-        hub_not_combined_uf2_file.seek(0)
+        uf2 = hub_not_combined_modified_bin_file.readlines()
+        hub_not_combined_modified_bin_file.seek(0)
+
+        school_id_changed = False
+        hub_id_changed = False
 
         for l in uf2:
             new_l = re.sub(SCHOOL_ID, new_school_id, l)
-            new_l = re.sub(HUB_ID, new_hub_id, new_l)
-            hub_not_combined_uf2_file.write(new_l)
 
-        # convert to bin
-        print "Converting back from uf2..."
-        call(["python","uf2conv.py",hub_not_combined_uf2_file.name, "-o", hub_not_combined_modified_bin_file.name])
+            if new_l != l:
+                school_id_changed = True
+
+            final_l = re.sub(HUB_ID, new_hub_id, new_l)
+
+            if final_l != new_l:
+                hub_id_changed = True
+
+            hub_not_combined_modified_bin_file.write(final_l)
+
+        hub_not_combined_modified_bin_file.flush()
+
+        if not school_id_changed:
+            print "School id not found in uf2!"
+            exit(1)
+
+        if not hub_id_changed:
+            print "Hub id not found in uf2!"
+            exit(1)
 
         # then to hex
         print "Creating final file: %s" % (output_file_path)

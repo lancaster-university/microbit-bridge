@@ -32,6 +32,7 @@ MicroBit uBit;
 char disp = 'a';
 
 extern const char* SCHOOL_ID;
+extern const char* HUB_ID;
 
 PeridoBridge bridge(uBit.radio, uBit.serial, uBit.messageBus);
 
@@ -56,49 +57,6 @@ void log_num(int c)
     // uBit.serial.printf("%d ", c);
 }
 
-int channelNumber = 0;
-int eventCount = 0;
-
-void onButton(MicroBitEvent e)
-{
-    eventCount ++;
-    if (e.source == MICROBIT_ID_BUTTON_A)
-    {
-        if(eventCount == 3)
-        {
-            channelNumber ++;
-            if(channelNumber > 9)
-            {
-                channelNumber = 9;
-            }
-            char channelDisplay = (char)channelNumber + 48;
-            uBit.display.print(channelDisplay);
-            uBit.radio.disable();
-            uBit.radio.setGroup(channelNumber);
-            uBit.radio.enable();
-            eventCount = 0;
-        }
-    }
-
-    if (e.source == MICROBIT_ID_BUTTON_B)
-    {
-        if(eventCount == 3)
-        {
-            channelNumber --;
-            if(channelNumber < 0)
-            {
-                channelNumber = 0;
-            }
-            char channelDisplay = (char)channelNumber + 48;
-            uBit.display.print(channelDisplay);
-            uBit.radio.disable();
-            uBit.radio.setGroup(channelNumber);
-            uBit.radio.enable();
-            eventCount = 0;
-        }
-    }
-}
-
 int main()
 {
     // Initialise the micro:bit runtime.
@@ -107,6 +65,7 @@ int main()
 
     // uBit.display.print(disp);
     uBit.display.scroll(SCHOOL_ID);
+    uBit.display.scroll(HUB_ID);
 
     // If main exits, there may still be other fibers running or registered event handlers etc.
     // Simply release this fiber, which will mean we enter the scheduler. Worse case, we then
