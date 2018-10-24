@@ -34,12 +34,12 @@ char disp = 'a';
 extern const char* SCHOOL_ID;
 extern const char* HUB_ID;
 
-PeridoBridge bridge(uBit.radio, uBit.serial, uBit.messageBus);
+PeridoBridge bridge(uBit.radio, uBit.serial, uBit.messageBus, uBit.display);
 
 void change_display()
 {
-    disp++;
-    uBit.display.print(disp);
+    // disp++;
+    // uBit.display.print(disp);
 }
 
 void log_string_ch(const char* c)
@@ -57,15 +57,29 @@ void log_num(int c)
     // uBit.serial.printf("%d ", c);
 }
 
+void blink()
+{
+    int toggle = 0;
+    while(1)
+    {
+        uBit.display.image.setPixelValue(RUNNING_TOGGLE_PASTE_COLUMN, RUNNING_TOGGLE_PASTE_ROW, toggle);
+        toggle = !toggle;
+        uBit.sleep(400);
+    }
+}
+
 int main()
 {
     // Initialise the micro:bit runtime.
     uBit.init();
+    bridge.enable();
     uBit.radio.enable();
 
+    create_fiber(blink);
+
     // uBit.display.print(disp);
-    uBit.display.scroll(SCHOOL_ID);
-    uBit.display.scroll(HUB_ID);
+    // uBit.display.scroll(SCHOOL_ID);
+    // uBit.display.scroll(HUB_ID);
 
     // If main exits, there may still be other fibers running or registered event handlers etc.
     // Simply release this fiber, which will mean we enter the scheduler. Worse case, we then
