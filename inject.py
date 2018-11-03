@@ -2,6 +2,7 @@ from subprocess import call
 import re, sys, os
 from optparse import OptionParser
 import tempfile
+from shutil import copyfile
 
 SCHOOL_ID = "M1cR0B1TSCHO"
 HUB_ID = "M1cR0B1THuBs"
@@ -32,21 +33,33 @@ parser.add_option("", "--output-file",
                   default="./hub.hex",
                   help="Output file path")
 
+parser.add_option("-c", "",
+                  action="store_true",
+                  dest="clean",
+                  default=False,
+                  help="Copy the latest hex file, and replace hub-not-combined.hex")
+
 (options, args) = parser.parse_args()
 
-def inject_ids(new_school_id, new_hub_id, output_file_path):
+def inject_ids(new_school_id, new_hub_id, output_file_path, clean):
 
     if len(new_school_id) != len(SCHOOL_ID):
-        print "New school id length must much the old: size %d" % len(SCHOOL_ID)
+        print "New school id length (%d) must match the old (%d)" % (len(new_school_id), len(SCHOOL_ID))
         return -1
 
     if len(new_hub_id) != len(HUB_ID):
-        print "New hub id length must much the old: size %d" % len(HUB_ID)
+        print "New hub id length (%d) must match the old (%d)" % (len(new_hub_id), len(HUB_ID))
         return -1
 
+    if clean:
+        print "Removing old hub file."
+        os.remove("./hub-not-combined.hex")
+
     if not os.path.isfile("./hub-not-combined.hex"):
-        ret = call(["cp", BUILD_FOLDER_PATH, "./hub-not-combined.hex"])
-        if ret != 0:
+        try:
+            print "Copying latest hub file from: %s" % BUILD_FOLDER_PATH
+            copyfile(BUILD_FOLDER_PATH, "./hub-not-combined.hex")
+        except Exception as e:
             print "hub-combined-hex not available"
 
     with tempfile.NamedTemporaryFile() as hub_not_combined_modified_hex_file, \
@@ -93,4 +106,4 @@ def inject_ids(new_school_id, new_hub_id, output_file_path):
         call(["python","merge_hex.py","./BOOTLOADER.hex", "./SOFTDEVICE.hex", hub_not_combined_modified_hex_file.name, "-o" + output_file_path])
 
 if __name__ == '__main__':
-    sys.exit(inject_ids(options.school_id, options.hub_id, options.output_file_path))
+    sys.exit(inject_ids(options.school_id, options.hub_id, options.output_file_path, options.clean))
