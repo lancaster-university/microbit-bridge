@@ -5,7 +5,7 @@ import tempfile
 from shutil import copyfile
 
 from intelhex import IntelHex, bin2hex, hex2bin
-from io import StringIO
+from io import StringIO, BytesIO
 
 SCHOOL_ID = "B1TSC"
 HUB_ID = "B1THu"
@@ -123,7 +123,6 @@ def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
             exit(1)
 
         # then to hex
-        print ("Creating final file: %s" % (output_file_path))
         bin2hex(hub_not_combined_modified_bin_file.name, hub_not_combined_modified_hex_file.name, 0x18000)
         replaced_hex = IntelHex(hub_not_combined_modified_hex_file.name)
         bootloader_hex = IntelHex(package_directory + "/hexes/BOOTLOADER.hex")
@@ -134,14 +133,22 @@ def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
 
         # finally creating the final binary.
         if len(output_file_path):
+            print ("Creating final file: %s" % (output_file_path))
             with open(output_file_path, 'w') as f:
                 replaced_hex.write_hex_file(f.name)
                 f.close()
                 return 0
         else:
             sio = StringIO()
-            replaced_hex.write_hex_file(sio)
-            return sio.getValue()
+            bio = BytesIO()
+            try:
+                #python 3
+                replaced_hex.write_hex_file(sio)
+                return sio.getvalue()
+            except:
+                #python 2
+                replaced_hex.write_hex_file(bio)
+                return bio.getvalue()
 
 if __name__ == '__main__':
     sys.exit(inject_ids(options.school_id, options.hub_id, options.output_file_path, options.clean))
