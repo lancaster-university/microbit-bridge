@@ -18,13 +18,15 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setup(
     name='microbit_bridge',  # Required
 
+    include_package_data=True,
+
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1',  # Required
+    version='0.0.3',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -114,6 +116,8 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=['intelhex', 'colorama'],  # Optional
+
+    package_data={"microbit_bridge": ["./hexes/*.hex"]}
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
