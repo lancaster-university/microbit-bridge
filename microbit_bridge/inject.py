@@ -44,7 +44,18 @@ parser.add_option("-c", "",
 
 (options, args) = parser.parse_args()
 
-def inject_ids(new_school_id, new_hub_id, output_file_path, clean):
+"""
+    Injects the given ids into a hex file and outputs it as a file (if given a path).
+
+    @param new_school_id the new school id to replace in the hub hex file
+
+    @param new_hub_id the new hub id to replace in the hub hex file
+
+    @param output_file_path the output path (defaults to ./hub-final.hex), if not specified, the file will be returned
+
+    @param clean defaults to False, if set to True, the latest hub-not-combined hex will be pulled from the build dir.
+"""
+def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
 
     if len(new_school_id) != len(SCHOOL_ID):
         print("New school id length (%d) must match the old (%d)" % (len(new_school_id), len(SCHOOL_ID)))
