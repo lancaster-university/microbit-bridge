@@ -4,10 +4,10 @@ from optparse import OptionParser
 import tempfile
 from shutil import copyfile
 
-SCHOOL_ID = "M1cR0B1TSCHO"
-HUB_ID = "M1cR0B1THuBs"
+SCHOOL_ID = "B1TSC"
+HUB_ID = "B1THu"
 
-BUILD_FOLDER_PATH = "./build/bbc-microbit-classic-gcc/source/microbit-samples.hex"
+BUILD_FOLDER_PATH = "../build/bbc-microbit-classic-gcc/source/microbit-samples.hex"
 
 parser = OptionParser()
 
@@ -30,7 +30,7 @@ parser.add_option("", "--output-file",
                   action="store",
                   type="string",
                   dest="output_file_path",
-                  default="./hub.hex",
+                  default="",
                   help="Output file path")
 
 parser.add_option("-c", "",
@@ -63,7 +63,8 @@ def inject_ids(new_school_id, new_hub_id, output_file_path, clean):
             print "hub-combined-hex not available"
 
     with tempfile.NamedTemporaryFile() as hub_not_combined_modified_hex_file, \
-            tempfile.NamedTemporaryFile() as hub_not_combined_modified_bin_file:
+            tempfile.NamedTemporaryFile() as hub_not_combined_modified_bin_file, \
+                tempfile.NamedTemporaryFile() as temp_out_file:
 
         # first convert the uncombined hex file into uf2
         call(["python","hex2bin.py","./hub-not-combined.hex", hub_not_combined_modified_bin_file.name])
@@ -91,11 +92,11 @@ def inject_ids(new_school_id, new_hub_id, output_file_path, clean):
         hub_not_combined_modified_bin_file.flush()
 
         if not school_id_changed:
-            print "School id not found in uf2!"
+            print "School id not found in bin!"
             exit(1)
 
         if not hub_id_changed:
-            print "Hub id not found in uf2!"
+            print "Hub id not found in bin!"
             exit(1)
 
         # then to hex
@@ -103,7 +104,18 @@ def inject_ids(new_school_id, new_hub_id, output_file_path, clean):
         call(["python","bin2hex.py", "--offset=0x18000", hub_not_combined_modified_bin_file.name, hub_not_combined_modified_hex_file.name])
 
         # finally creating the final binary.
-        call(["python","merge_hex.py","./BOOTLOADER.hex", "./SOFTDEVICE.hex", hub_not_combined_modified_hex_file.name, "-o" + output_file_path])
+        if len(output_file_path):
+            call(["python","merge_hex.py","./BOOTLOADER.hex", "./SOFTDEVICE.hex", hub_not_combined_modified_hex_file.name, "-o" + output_file_path])
+            return 0
+        else:
+            call(["python","merge_hex.py","./BOOTLOADER.hex", "./SOFTDEVICE.hex", hub_not_combined_modified_hex_file.name, "-o" + temp_out_file.name])
+
+            temp_out_file.seek(0)
+            print temp_out_file.readlines()
+            return temp_out_file.readlines()
+
+def generate_firmware(school_id, hub_id):
+    return inject_ids(school_id, hub_id, "", False)
 
 if __name__ == '__main__':
     sys.exit(inject_ids(options.school_id, options.hub_id, options.output_file_path, options.clean))
