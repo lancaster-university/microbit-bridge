@@ -115,6 +115,8 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=['intelhex', 'colorama'],  # Optional
 
+    data_files=[('.', ['BOOTLOADER.hex', 'hub-not-combined.hex', 'SOFTDEVICE.hex'])]
+
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:
