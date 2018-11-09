@@ -12,6 +12,8 @@ HUB_ID = "B1THu"
 
 BUILD_FOLDER_PATH = "../build/bbc-microbit-classic-gcc/source/microbit-samples.hex"
 
+package_directory = os.path.dirname(os.path.abspath(__file__))
+
 parser = OptionParser()
 
 #command line options
@@ -67,12 +69,12 @@ def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
 
     if clean:
         print("Removing old hub file.")
-        os.remove("./hub-not-combined.hex")
+        os.remove(package_directory + "/hexes/hub-not-combined.hex")
 
-    if not os.path.isfile(os.getcwd()+"/hub-not-combined.hex"):
+    if not os.path.isfile(package_directory + "/hexes/hub-not-combined.hex"):
         try:
             print("Copying latest hub file from: %s" % BUILD_FOLDER_PATH)
-            copyfile(BUILD_FOLDER_PATH, "./hub-not-combined.hex")
+            copyfile(BUILD_FOLDER_PATH, package_directory + "/hexes/hub-not-combined.hex")
         except Exception as e:
             print("hub-combined-hex not available")
 
@@ -81,7 +83,7 @@ def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
                 tempfile.NamedTemporaryFile() as temp_out_file:
 
         # first convert the uncombined hex file into bin
-        hex_as_bin = hex2bin("./hub-not-combined.hex", hub_not_combined_modified_bin_file.name)
+        hex_as_bin = hex2bin(package_directory + "/hexes/hub-not-combined.hex", hub_not_combined_modified_bin_file.name)
 
         # replace the old ids with the new.
         print("Replacing ids.")
@@ -124,8 +126,8 @@ def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
         print ("Creating final file: %s" % (output_file_path))
         bin2hex(hub_not_combined_modified_bin_file.name, hub_not_combined_modified_hex_file.name, 0x18000)
         replaced_hex = IntelHex(hub_not_combined_modified_hex_file.name)
-        bootloader_hex = IntelHex("./BOOTLOADER.hex")
-        softdevice_hex = IntelHex("./SOFTDEVICE.hex")
+        bootloader_hex = IntelHex(package_directory + "/hexes/BOOTLOADER.hex")
+        softdevice_hex = IntelHex(package_directory + "/hexes/SOFTDEVICE.hex")
 
         replaced_hex.merge(bootloader_hex)
         replaced_hex.merge(softdevice_hex)
