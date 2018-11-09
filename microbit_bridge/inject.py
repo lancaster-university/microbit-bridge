@@ -111,7 +111,6 @@ def inject_ids(new_school_id, new_hub_id, output_file_path, clean):
             call(["python","merge_hex.py","./BOOTLOADER.hex", "./SOFTDEVICE.hex", hub_not_combined_modified_hex_file.name, "-o" + temp_out_file.name])
 
             temp_out_file.seek(0)
-            print temp_out_file.readlines()
             return temp_out_file.readlines()
 
 def generate_firmware(school_id, hub_id):
