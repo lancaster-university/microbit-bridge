@@ -14,37 +14,6 @@ BUILD_FOLDER_PATH = "../build/bbc-microbit-classic-gcc/source/microbit-samples.h
 
 package_directory = os.path.dirname(os.path.abspath(__file__))
 
-parser = OptionParser()
-
-#command line options
-parser.add_option("", "--school-id",
-                  action="store",
-                  type="string",
-                  dest="school_id",
-                  default="",
-                  help="The new school id to splice into the hub hex file")
-
-parser.add_option("", "--hub-id",
-                  action="store",
-                  type="string",
-                  dest="hub_id",
-                  default="",
-                  help="The new hub id to splice into the hub hex file")
-
-parser.add_option("", "--output-file",
-                  action="store",
-                  type="string",
-                  dest="output_file_path",
-                  default="./hub-final.hex",
-                  help="Output file path")
-
-parser.add_option("-c", "",
-                  action="store_true",
-                  dest="clean",
-                  default=False,
-                  help="Copy the latest hex file, and replace hub-not-combined.hex")
-
-(options, args) = parser.parse_args()
 
 """
     Injects the given ids into a hex file and outputs it as a file (if given a path).
@@ -151,4 +120,36 @@ def inject_ids(new_school_id, new_hub_id, output_file_path="", clean=False):
                 return bio.getvalue()
 
 if __name__ == '__main__':
+    parser = OptionParser() # it have global effect and should be used only in the `__main__` section.
+
+    #command line options
+    parser.add_option("", "--school-id",
+                      action="store",
+                      type="string",
+                      dest="school_id",
+                      default="",
+                      help="The new school id to splice into the hub hex file")
+
+    parser.add_option("", "--hub-id",
+                      action="store",
+                      type="string",
+                      dest="hub_id",
+                      default="",
+                      help="The new hub id to splice into the hub hex file")
+
+    parser.add_option("", "--output-file",
+                      action="store",
+                      type="string",
+                      dest="output_file_path",
+                      default="./hub-final.hex",
+                      help="Output file path")
+
+    parser.add_option("-c", "",
+                      action="store_true",
+                      dest="clean",
+                      default=False,
+                      help="Copy the latest hex file, and replace hub-not-combined.hex")
+
+    (options, args) = parser.parse_args()
+
     sys.exit(inject_ids(options.school_id, options.hub_id, options.output_file_path, options.clean))
